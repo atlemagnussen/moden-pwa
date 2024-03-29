@@ -7,20 +7,16 @@ export class HomeView extends LitElement {
         :host {
             display: block;
             padding: 1rem;
+            height: 100%;
+        }
+        canvas-drawer {
+            height: 100%;
         }
     `
     
     render() {
         return html`
-            <article>
-                <header>
-                    <h1>Me</h1>
-                </header>
-
-                <section>
-                    <h2>App</h2>
-                </section>
-            </article>
+            <canvas-drawer></canvas-drawer>
         `
     }
 }

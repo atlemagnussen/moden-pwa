@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "backslash-project"
+  },
+  "targets": {
+    "backslash-project": {
+      "hosting": {
+        "tilde": [
+          "tilde1"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

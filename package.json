@@ -11,5 +11,8 @@
     "pwa"
   ],
   "author": "atlemagnussen",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.30"
+  }
 }

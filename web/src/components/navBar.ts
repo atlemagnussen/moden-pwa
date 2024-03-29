@@ -12,7 +12,7 @@ export class Navbar extends LitElement {
         header {
             display: flex;
             flex-direction: row;
-            min-height: 48px;
+            min-height: 35px;
             max-height: 100px;
             justify-content: space-between;
             width: 100%;
@@ -23,7 +23,7 @@ export class Navbar extends LitElement {
             background-color: var(--navbar-bg-color);
             display: flex;
             justify-content: space-between;
-            padding: 0 1rem;
+            padding: 0 .4rem;
             width: 100%;
             z-index: 99;
             position: relative;
@@ -38,7 +38,7 @@ export class Navbar extends LitElement {
             display: flex;
             flex-direction: row;
             justify-content: end;
-            padding: 0.7rem;
+            padding: 0.4rem;
             width: 100%;
         }
         ::slotted(a) {
