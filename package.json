@@ -1,0 +1,15 @@
+{
+  "name": "modern-pwa",
+  "version": "1.0.0",
+  "description": "pwa test again",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "web",
+    "pwa"
+  ],
+  "author": "atlemagnussen",
+  "license": "ISC"
+}
