@@ -13,7 +13,6 @@ export class CanvasDrawer extends LitElement {
         :host {
             display: flex;
             flex-direction: column;
-            outline: 1px solid black;
         }
         menu {
             flex: 2rem 0 0;
@@ -68,7 +67,7 @@ export class CanvasDrawer extends LitElement {
             <menu>
                 <input type="color" placeholder="enter hex color" @input=${this.colorChange} value="${this.color}">
                 <input type="range" min="1" max="50" value="${this.lineWidth}" @input=${this.lineWidthChange}>
-                <button @click=${this.clearCanvas}>clear</button>
+                <t-button @click=${this.clearCanvas}>clear</t-button>
                 <!-- <input type="file" name="filename" accept="image/*" @change=${this.uploadImage}> -->
             </menu>
             
