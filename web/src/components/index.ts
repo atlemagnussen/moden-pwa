@@ -1,3 +1,7 @@
 import "./navBar"
 import "./canvasDrawer"
 import "./tButton"
+import "./drawingMenu"
+import "./colorDisplayer"
+import "./paletteDisplayer"
+import "./schemeDisplayer"

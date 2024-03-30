@@ -1,5 +1,6 @@
 import {LitElement, html, css} from "lit"
 import {customElement, query} from "lit/decorators.js"
+import { config } from "@app/services/drawConfig"
 
 interface PartialTouch {
     identifier: number
@@ -25,36 +26,6 @@ export class CanvasDrawer extends LitElement {
         }
     `
 
-    color = "#004cff"
-    lineWidth = 9
-
-    colorChange(e: Event) {
-        const target = e.target as HTMLInputElement
-        this.color = target.value
-    }
-    lineWidthChange(e: Event) {
-        const target = e.target as HTMLInputElement
-        this.lineWidth = parseInt(target.value)
-    }
-    uploadImage(e: Event) {
-        const target = e.target as HTMLInputElement
-        if (!target.files || target.files.length == 0)
-            return 
-        const file = target.files[0]
-
-        const image = new Image()
-        image.onload = () => {
-            if (this.context)
-                this.context.drawImage(image, 0, 0)
-        }
-        const reader = new FileReader()
-        reader.addEventListener("load",() => {
-            image.src = reader.result as string
-        }, false)
-
-        reader.readAsDataURL(file)
-    }
-
     @query("section")
     sectionEl: HTMLDivElement | undefined
 
@@ -64,13 +35,6 @@ export class CanvasDrawer extends LitElement {
     context: CanvasRenderingContext2D | null = null
     render() {
         return html`
-            <menu>
-                <input type="color" placeholder="enter hex color" @input=${this.colorChange} value="${this.color}">
-                <input type="range" min="1" max="50" value="${this.lineWidth}" @input=${this.lineWidthChange}>
-                <t-button @click=${this.clearCanvas}>clear</t-button>
-                <!-- <input type="file" name="filename" accept="image/*" @change=${this.uploadImage}> -->
-            </menu>
-            
             <section @mousemove=${this.mouseMove} @mousedown=${this.setMousePosition} @mouseenter=${this.setMousePosition}>
                 <canvas @touchstart=${this.touchstart}
                     @touchmove=${this.touchMove}
@@ -144,7 +108,7 @@ export class CanvasDrawer extends LitElement {
         const context = this.context
         const touches = e.changedTouches;
         for (let i = 0; i < touches.length; i++) {
-            const color = this.color
+            const color = config.baseColor
             const touch = touches[i]
             const idx = this.findOngoingTouchIndexById(touch.identifier)
             if (idx === null || idx === undefined || idx < 0)
@@ -154,7 +118,7 @@ export class CanvasDrawer extends LitElement {
             context.beginPath()
             context.moveTo(ongoingTouch.clientX - this.offsetX, ongoingTouch.clientY - this.offsetY)
             context.lineTo(touch.clientX - this.offsetX, touch.clientY - this.offsetY)
-            context.lineWidth = this.lineWidth
+            context.lineWidth = config.lineWidth
             context.strokeStyle = color
             context.lineJoin = "round"
             context.closePath()
@@ -172,8 +136,8 @@ export class CanvasDrawer extends LitElement {
             const touch = touches[i]
             const idx = this.findOngoingTouchIndexById(touch.identifier)
             if (idx !== null && idx !== undefined && idx >= 0) {
-                context.lineWidth = this.lineWidth
-                context.fillStyle = this.color
+                context.lineWidth = config.lineWidth
+                context.fillStyle = config.baseColor
                 this.ongoingTouches.splice(idx, 1)
             }
         }
@@ -193,9 +157,9 @@ export class CanvasDrawer extends LitElement {
             return
     
         this.context.beginPath()
-        this.context.lineWidth = this.lineWidth
+        this.context.lineWidth = config.lineWidth
         this.context.lineCap = "round"
-        this.context.strokeStyle = this.color
+        this.context.strokeStyle = config.baseColor
         this.context.moveTo(this.pos.x, this.pos.y)
         this.setMousePosition(e)
         this.context.lineTo(this.pos.x, this.pos.y)
