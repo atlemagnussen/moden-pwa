@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit"
 import { customElement } from "lit/decorators.js"
-import { config } from "@app/services/drawConfig"
+import { config, setTheme } from "@app/services/drawConfig"
 import { getColors } from "@app/services/colorTheme"
 
 @customElement('drawing-menu')
@@ -16,8 +16,8 @@ export class DrawingMenu extends LitElement {
         const target = e.target as HTMLInputElement
         const color = target.value
         config.baseColor = color
-        const theme = getColors(color)
-        console.log(theme)
+        const t = getColors(color)
+        setTheme(t)
     }
     lineWidthChange(e: Event) {
         const target = e.target as HTMLInputElement
