@@ -1,6 +1,6 @@
 import {LitElement, html, css} from "lit"
 import {customElement, query} from "lit/decorators.js"
-import { config } from "@app/services/drawConfig"
+import { getConfig } from "@app/services/drawConfig"
 
 interface PartialTouch {
     identifier: number
@@ -105,6 +105,7 @@ export class CanvasDrawer extends LitElement {
         e.preventDefault()
         if (!this.context)
             return
+        const config = getConfig()
         const context = this.context
         const touches = e.changedTouches;
         for (let i = 0; i < touches.length; i++) {
@@ -130,6 +131,7 @@ export class CanvasDrawer extends LitElement {
         e.preventDefault()
         if (!this.context)
             return
+        const config = getConfig()
         const context = this.context
         const touches = e.changedTouches;
         for (let i = 0; i < touches.length; i++) {
@@ -156,6 +158,7 @@ export class CanvasDrawer extends LitElement {
         if (e.buttons !== 1 || !this.context)
             return
     
+        const config = getConfig()
         this.context.beginPath()
         this.context.lineWidth = config.lineWidth
         this.context.lineCap = "round"

@@ -29,6 +29,7 @@
     "@effective/color": "^1.0.1",
     "@material/material-color-utilities": "^0.2.7",
     "lit": "^3.1.2",
-    "router-slot": "^1.5.5"
+    "router-slot": "^1.5.5",
+    "rxjs": "^7.8.1"
   }
 }
