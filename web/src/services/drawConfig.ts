@@ -5,20 +5,34 @@ import { Theme } from "@material/material-color-utilities"
 export interface DrawConfig {
     baseColor: string
     lineWidth: number
+    darkTheme: boolean
 }
 
 // config
 let defaultConfig: DrawConfig = {
     baseColor: "#004cff",
-    lineWidth: 9
+    lineWidth: 9,
+    darkTheme: true
 }
 const configSubject = new BehaviorSubject(defaultConfig)
 export const config = configSubject.asObservable()
 
-export function setConfig(baseColor: string, lineWidth: number) {
-    configSubject.next({baseColor, lineWidth})
+export function setBaseColor(baseColor: string) {
+    const nextVal = configSubject.getValue()
+    nextVal.baseColor = baseColor
+    configSubject.next(nextVal)
     const theme = getColors(baseColor)
     setTheme(theme)
+}
+export function setLineWidth(lineWidth: number) {
+    const nextVal = configSubject.getValue()
+    nextVal.lineWidth = lineWidth
+    configSubject.next(nextVal)
+}
+export function setDarkTheme(darkTheme: boolean) {
+    const nextVal = configSubject.getValue()
+    nextVal.darkTheme = darkTheme
+    configSubject.next(nextVal)
 }
 export function getConfig() {
     const val = configSubject.getValue()

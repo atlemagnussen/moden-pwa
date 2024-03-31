@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
-import { DrawConfig, config, setConfig } from "@app/services/drawConfig"
+import { DrawConfig, config, theme, setBaseColor, setLineWidth, setDarkTheme } from "@app/services/drawConfig"
+import { Theme } from "@material/material-color-utilities"
 
 @customElement('drawing-menu')
 export class DrawingMenu extends LitElement {
@@ -8,24 +9,38 @@ export class DrawingMenu extends LitElement {
         :host {
             display: flex;
             flex-direction: row;
+            gap: 0.5rem;
         }
     `
     @state()
-    config: DrawConfig = { baseColor: "#333333", lineWidth: 9}
+    config: DrawConfig = { baseColor: "#333333", lineWidth: 9, darkTheme: true}
+
+    @state()
+    theme: Theme | null = null
 
     connectedCallback(): void {
         super.connectedCallback()
-        config.subscribe(c => this.config = c)
+        config.subscribe(c => {
+            this.config = c
+            this.requestUpdate()
+        })
+        theme.subscribe(t => {
+            this.theme = t
+            this.requestUpdate()
+        })
     }
     colorChange(e: Event) {
         const target = e.target as HTMLInputElement
-        const color = target.value
-        setConfig(color, this.config.lineWidth)
+        setBaseColor(target.value)
     }
     lineWidthChange(e: Event) {
         const target = e.target as HTMLInputElement
         const lineWidth = parseInt(target.value)
-        setConfig(this.config.baseColor, lineWidth)
+        setLineWidth(lineWidth)
+    }
+    darkThemeChanged(e: Event) {
+        const target = e.target as HTMLInputElement
+        setDarkTheme(target.checked)
     }
     // uploadImage(e: Event) {
     //     const target = e.target as HTMLInputElement
@@ -45,10 +60,29 @@ export class DrawingMenu extends LitElement {
 
     //     reader.readAsDataURL(file)
     // }
+    renderThemeColors() {
+        if (!this.theme)
+            return html``
+
+        const themeCol = this.config.darkTheme ? this.theme.schemes.dark : this.theme.schemes.light
+
+        return html`
+            <color-displayer .color=${themeCol.primary}></color-displayer>
+            <color-displayer .color=${themeCol.primaryContainer}></color-displayer>
+            <color-displayer .color=${themeCol.secondary}></color-displayer>
+            <color-displayer .color=${themeCol.secondaryContainer}></color-displayer>
+            <color-displayer .color=${themeCol.tertiary}></color-displayer>
+            <color-displayer .color=${themeCol.tertiaryContainer}></color-displayer>
+        `
+    }
     render() {
         return html`
+            <label for="background">Dark
+                <input type="checkbox" id="background" .checked=${this.config.darkTheme} @change=${this.darkThemeChanged}>
+            </label>
             <input type="color" placeholder="enter hex color" @input=${this.colorChange} value="${this.config.baseColor}">
             <input type="range" min="1" max="50" value="${this.config.lineWidth}" @input=${this.lineWidthChange}>
+            ${this.renderThemeColors()}
             <!-- <t-button @click=${this.clearCanvas}>clear</t-button> -->
             <!-- <input type="file" name="filename" accept="image/*" @change=${this.uploadImage}> -->
         `
