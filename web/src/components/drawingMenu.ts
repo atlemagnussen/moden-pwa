@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
-import { DrawConfig, config, theme, setBaseColor, setLineWidth, setDarkTheme } from "@app/services/drawConfig"
+import { DrawConfig, config, theme, setBaseColor, setLineWidth, setDarkTheme, setSelectedThemeColor } from "@app/services/drawConfig"
 import { Theme } from "@material/material-color-utilities"
 
 @customElement('drawing-menu')
@@ -42,6 +42,10 @@ export class DrawingMenu extends LitElement {
         const target = e.target as HTMLInputElement
         setDarkTheme(target.checked)
     }
+    colorDisplayerClicked(e: CustomEvent) {
+        const color = e.detail as string
+        setSelectedThemeColor(color)
+    }
     // uploadImage(e: Event) {
     //     const target = e.target as HTMLInputElement
     //     if (!target.files || target.files.length == 0)
@@ -67,12 +71,14 @@ export class DrawingMenu extends LitElement {
         const themeCol = this.config.darkTheme ? this.theme.schemes.dark : this.theme.schemes.light
 
         return html`
+        <section @color-displayer-clicked=${this.colorDisplayerClicked}>
             <color-displayer .color=${themeCol.primary}></color-displayer>
             <color-displayer .color=${themeCol.primaryContainer}></color-displayer>
             <color-displayer .color=${themeCol.secondary}></color-displayer>
             <color-displayer .color=${themeCol.secondaryContainer}></color-displayer>
             <color-displayer .color=${themeCol.tertiary}></color-displayer>
             <color-displayer .color=${themeCol.tertiaryContainer}></color-displayer>
+        </section>
         `
     }
     render() {
@@ -83,8 +89,6 @@ export class DrawingMenu extends LitElement {
             <input type="color" placeholder="enter hex color" @input=${this.colorChange} value="${this.config.baseColor}">
             <input type="range" min="1" max="50" value="${this.config.lineWidth}" @input=${this.lineWidthChange}>
             ${this.renderThemeColors()}
-            <!-- <t-button @click=${this.clearCanvas}>clear</t-button> -->
-            <!-- <input type="file" name="filename" accept="image/*" @change=${this.uploadImage}> -->
         `
     }
 }

@@ -1,11 +1,12 @@
 import { BehaviorSubject } from "rxjs"
 import { getColors } from "@app/services/colorTheme"
-import { Theme } from "@material/material-color-utilities"
+import { Theme, hexFromArgb } from "@material/material-color-utilities"
 
 export interface DrawConfig {
     baseColor: string
     lineWidth: number
     darkTheme: boolean
+    selectedThemeColor?: string
 }
 
 // config
@@ -34,6 +35,14 @@ export function setDarkTheme(darkTheme: boolean) {
     nextVal.darkTheme = darkTheme
     configSubject.next(nextVal)
 }
+export function setSelectedThemeColor(color?: string) {
+    const nextVal = configSubject.getValue()
+    if (nextVal.selectedThemeColor === color)
+        nextVal.selectedThemeColor = undefined
+    else
+        nextVal.selectedThemeColor = color
+    configSubject.next(nextVal)
+}
 export function getConfig() {
     const val = configSubject.getValue()
     return val
@@ -45,4 +54,30 @@ const themeSubject = new BehaviorSubject(themeInitial)
 export const theme = themeSubject.asObservable()
 export function setTheme(t: Theme) {
     themeSubject.next(t)
+}
+
+
+export function getTouchColor(idx: number) {
+    const config = configSubject.getValue()
+    if (config.selectedThemeColor)
+        return config.selectedThemeColor as string
+
+    const t = themeSubject.getValue()
+    const theme = config.darkTheme ? t.schemes.dark : t.schemes.light
+    if (idx === 0)
+        return config.baseColor
+    if (idx === 1)
+        return hexFromArgb(theme.primary)
+    if (idx === 2)
+        return hexFromArgb(theme.primaryContainer)
+    if (idx === 3)
+        return hexFromArgb(theme.secondary)
+    if (idx === 4)
+        return hexFromArgb(theme.secondaryContainer)
+    if (idx === 5)
+        return hexFromArgb(theme.tertiary)
+    if (idx === 6)
+        return hexFromArgb(theme.tertiaryContainer)
+    else
+        return config.baseColor
 }

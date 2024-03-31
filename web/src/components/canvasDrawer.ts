@@ -1,6 +1,6 @@
 import {LitElement, html, css} from "lit"
 import {customElement, query} from "lit/decorators.js"
-import { getConfig } from "@app/services/drawConfig"
+import { getConfig, getTouchColor } from "@app/services/drawConfig"
 
 interface PartialTouch {
     identifier: number
@@ -109,12 +109,12 @@ export class CanvasDrawer extends LitElement {
         const context = this.context
         const touches = e.changedTouches;
         for (let i = 0; i < touches.length; i++) {
-            const color = config.baseColor
             const touch = touches[i]
             const idx = this.findOngoingTouchIndexById(touch.identifier)
             if (idx === null || idx === undefined || idx < 0)
                 continue
 
+            const color = getTouchColor(idx)
             const ongoingTouch = this.ongoingTouches[idx]
             context.beginPath()
             context.moveTo(ongoingTouch.clientX - this.offsetX, ongoingTouch.clientY - this.offsetY)
@@ -139,7 +139,7 @@ export class CanvasDrawer extends LitElement {
             const idx = this.findOngoingTouchIndexById(touch.identifier)
             if (idx !== null && idx !== undefined && idx >= 0) {
                 context.lineWidth = config.lineWidth
-                context.fillStyle = config.baseColor
+                context.fillStyle = getTouchColor(idx)
                 this.ongoingTouches.splice(idx, 1)
             }
         }
@@ -162,7 +162,7 @@ export class CanvasDrawer extends LitElement {
         this.context.beginPath()
         this.context.lineWidth = config.lineWidth
         this.context.lineCap = "round"
-        this.context.strokeStyle = config.baseColor
+        this.context.strokeStyle = getTouchColor(0)
         this.context.moveTo(this.pos.x, this.pos.y)
         this.setMousePosition(e)
         this.context.lineTo(this.pos.x, this.pos.y)
