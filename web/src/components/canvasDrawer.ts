@@ -1,6 +1,7 @@
 import {LitElement, html, css} from "lit"
 import {customElement, query} from "lit/decorators.js"
-import { getConfig, getTouchColor } from "@app/services/drawConfig"
+import { getConfig, getTouchColor, clear } from "@app/services/drawConfig"
+import { Subscription } from "rxjs"
 
 interface PartialTouch {
     identifier: number
@@ -26,6 +27,8 @@ export class CanvasDrawer extends LitElement {
         }
     `
 
+    subs: Subscription[] = []
+
     @query("section")
     sectionEl: HTMLDivElement | undefined
 
@@ -43,6 +46,16 @@ export class CanvasDrawer extends LitElement {
                 </canvas>
             </section>
         `
+    }
+    connectedCallback(): void {
+        super.connectedCallback()
+        this.subs.push(clear.subscribe(() => {
+            this.clearCanvas()
+        }))
+    }
+    disconnectedCallback(): void {
+        super.disconnectedCallback()
+        this.subs.map(s => s.unsubscribe())
     }
     protected firstUpdated(): void {
         if (!this.canvasEl)

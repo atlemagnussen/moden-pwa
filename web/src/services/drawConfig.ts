@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs"
+import { BehaviorSubject, Subject } from "rxjs"
 import { getColors } from "@app/services/colorTheme"
 import { Theme, hexFromArgb } from "@material/material-color-utilities"
 
@@ -80,4 +80,14 @@ export function getTouchColor(idx: number) {
         return hexFromArgb(theme.tertiaryContainer)
     else
         return config.baseColor
+}
+
+let clearVal = 1
+const clearSubject = new Subject<number>()
+clearSubject.next(clearVal)
+
+export const clear = clearSubject.asObservable()
+export function clearCanvas() {
+    clearVal += 1
+    clearSubject.next(clearVal)
 }
