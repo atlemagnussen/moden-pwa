@@ -21,6 +21,7 @@ export const config = configSubject.asObservable()
 export function setBaseColor(baseColor: string) {
     const nextVal = configSubject.getValue()
     nextVal.baseColor = baseColor
+    nextVal.selectedThemeColor = undefined
     configSubject.next(nextVal)
     const theme = getColors(baseColor)
     setTheme(theme)
