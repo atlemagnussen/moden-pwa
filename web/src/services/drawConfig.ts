@@ -10,12 +10,27 @@ export interface DrawConfig {
 }
 
 // config
-let defaultConfig: DrawConfig = {
+let initialConfig: DrawConfig = {
     baseColor: "#004cff",
     lineWidth: 9,
     darkTheme: true
 }
-const configSubject = new BehaviorSubject(defaultConfig)
+const savedConfigStr = localStorage.getItem("config")
+if (savedConfigStr) {
+    try {
+        const savedConfig = JSON.parse(savedConfigStr)
+        initialConfig = savedConfig
+    }
+    catch(err) {
+        console.error("error parsing saved config from localstorage", err)
+    }
+}
+function saveConfig() {
+    const value = configSubject.getValue()
+    const valueStr = JSON.stringify(value)
+    localStorage.setItem("config", valueStr)
+}
+const configSubject = new BehaviorSubject(initialConfig)
 export const config = configSubject.asObservable()
 
 export function setBaseColor(baseColor: string) {
@@ -25,16 +40,19 @@ export function setBaseColor(baseColor: string) {
     configSubject.next(nextVal)
     const theme = getColors(baseColor)
     setTheme(theme)
+    saveConfig()
 }
 export function setLineWidth(lineWidth: number) {
     const nextVal = configSubject.getValue()
     nextVal.lineWidth = lineWidth
     configSubject.next(nextVal)
+    saveConfig()
 }
 export function setDarkTheme(darkTheme: boolean) {
     const nextVal = configSubject.getValue()
     nextVal.darkTheme = darkTheme
     configSubject.next(nextVal)
+    saveConfig()
 }
 export function setSelectedThemeColor(color?: string) {
     const nextVal = configSubject.getValue()
@@ -50,7 +68,7 @@ export function getConfig() {
 }
 
 // theme
-let themeInitial = getColors(defaultConfig.baseColor)
+let themeInitial = getColors(initialConfig.baseColor)
 const themeSubject = new BehaviorSubject(themeInitial)
 export const theme = themeSubject.asObservable()
 export function setTheme(t: Theme) {

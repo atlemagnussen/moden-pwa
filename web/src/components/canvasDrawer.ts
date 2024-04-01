@@ -68,7 +68,9 @@ export class CanvasDrawer extends LitElement {
     setBackground() {
         if (!this.context || !this.sectionEl)
             return
-        // this.context.fillStyle = "#FFFFFF"
+        const config = getConfig()
+        if (!config.darkTheme)
+            this.context.fillStyle = "#FFFFFF"
         this.context.fillRect(0, 0, this.sectionEl.clientWidth, this.sectionEl.clientHeight);
     }
     setSize() {
@@ -83,6 +85,7 @@ export class CanvasDrawer extends LitElement {
         this.setSize()
         // this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height)
+        this.setBackground()
     }
     ongoingTouches: PartialTouch[] = []
     copyTouch(t: Touch): PartialTouch {
