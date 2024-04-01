@@ -3,7 +3,7 @@
         "incremental": true,
         "target": "ESNext",
         "module": "ESNext",
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
         "moduleResolution": "Node",
         "noEmit": true,
         "outDir": "./types",

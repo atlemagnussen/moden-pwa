@@ -1,9 +1,9 @@
+declare const self: ServiceWorkerGlobalScope
+
 import {precacheAndRoute, createHandlerBoundToURL} from "workbox-precaching"
 import {clientsClaim} from "workbox-core"
 import {registerRoute, NavigationRoute} from "workbox-routing"
 
-
-declare const self: ServiceWorkerGlobalScope
 // declare var clients: Clients
 clientsClaim()
 
@@ -17,4 +17,10 @@ const navigationRoute = new NavigationRoute(handler, {
         new RegExp('/silent-renew.html')
     ]
 })
-registerRoute(navigationRoute);
+registerRoute(navigationRoute)
+
+addEventListener("message", (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting()
+    }
+})
