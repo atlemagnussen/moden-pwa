@@ -1,5 +1,6 @@
 import { LitElement, css, html } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { customElement, property, query } from "lit/decorators.js"
+import { styleMap } from "lit/directives/style-map.js"
 import { GridShowEngine, GridShowOptions, GridShowWidget } from "./gridShow"
 
 @customElement('grid-show')
@@ -7,7 +8,6 @@ export class GridShow extends LitElement {
     static styles = css`
         :host {
             display: block;
-            height: 100%;
             border: 1px solid yellow;
         }
         * {
@@ -301,19 +301,53 @@ export class GridShow extends LitElement {
         cols: 40,
         rows: 30
     }
+    @query("#digilean-grid")
+    gridEl: HTMLElement | undefined
+    engine: GridShowEngine | undefined
 
-    widgets: GridShowWidget[] = [{
-        x: 0, y: 0, w: 2, h: 2
-    }]
+    widgets: GridShowWidget[] = [
+        {
+            x: 0, y: 0, w: 2, h: 2
+        },
+        {
+            x: 2, y: 0, w: 2, h: 2
+        },
+        {
+            x: 4, y: 0, w: 2, h: 2
+        },
+        {
+            x: 6, y: 0, w: 2, h: 2
+        },
+        {
+            x: 8, y: 0, w: 2, h: 2
+        },
+        {
+            x: 10, y: 0, w: 2, h: 2
+        }
+    ]
 
     renderWidget(w: GridShowWidget) {
+        if (!this.engine)
+            return html``
+
+        const cellWidth = this.engine.getGridCellWidth()
+        const wHeight = cellWidth * w.h
+        const height = `${wHeight}px`
+
+        const styles = { height }
         return html`
-            <div class="grid-item" gs-x="${w.x}" gs-y="${w.y}" gs-w="${w.w}" gs-h="${w.h}">
+            <div class="grid-item" g-x="${w.x}" g-y="${w.y}" g-w="${w.w}" g-h="${w.h}" style=${styleMap(styles)}>
                 <span>Test</span>
             </div>
         `
     }
-
+    protected firstUpdated() {
+        if (this.gridEl) {
+            this.engine = new GridShowEngine(this.gridEl, this.options)
+            this.requestUpdate()
+        }
+            
+    }
     render() {
 
         return html`
