@@ -9,6 +9,7 @@ export class GridShow extends LitElement {
         :host {
             display: block;
             border: 1px solid yellow;
+            position: relative;
         }
         * {
             box-sizing: border-box;
@@ -305,36 +306,17 @@ export class GridShow extends LitElement {
     gridEl: HTMLElement | undefined
     engine: GridShowEngine | undefined
 
-    widgets: GridShowWidget[] = [
-        {
-            x: 0, y: 0, w: 2, h: 2
-        },
-        {
-            x: 2, y: 0, w: 2, h: 2
-        },
-        {
-            x: 4, y: 0, w: 2, h: 2
-        },
-        {
-            x: 6, y: 0, w: 2, h: 2
-        },
-        {
-            x: 8, y: 0, w: 2, h: 2
-        },
-        {
-            x: 10, y: 0, w: 2, h: 2
-        }
-    ]
+    widgets: GridShowWidget[] = []
 
     renderWidget(w: GridShowWidget) {
         if (!this.engine)
             return html``
 
         const cellWidth = this.engine.getGridCellWidth()
-        const wHeight = cellWidth * w.h
-        const height = `${wHeight}px`
+        const height = `${cellWidth * w.h}px`
+        const top = `${cellWidth * w.y}px`
 
-        const styles = { height }
+        const styles = { height, top }
         return html`
             <div class="grid-item" g-x="${w.x}" g-y="${w.y}" g-w="${w.w}" g-h="${w.h}" style=${styleMap(styles)}>
                 <span>Test</span>
@@ -342,6 +324,16 @@ export class GridShow extends LitElement {
         `
     }
     protected firstUpdated() {
+
+        for (let i = 0; i < 19; i++) {
+            const w: GridShowWidget = { x: i*2, y: 0, w: 2, h: 2}
+            this.widgets.push(w)
+        }
+        for (let y = 0; y < 10; y++) {
+            const w: GridShowWidget = { x: y*2, y: 2, w: 2, h: 2}
+            this.widgets.push(w)
+        }
+
         if (this.gridEl) {
             this.engine = new GridShowEngine(this.gridEl, this.options)
             this.requestUpdate()
