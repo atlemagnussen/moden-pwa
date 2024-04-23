@@ -9,9 +9,6 @@ export class GridView extends LitElement {
             padding: 1rem;
             height: 100%;
         }
-        grid-show {
-            height: 100%;
-        }
     `
     
     render() {

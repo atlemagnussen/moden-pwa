@@ -1,5 +1,6 @@
 import { LitElement, css, html } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { customElement, property, query } from "lit/decorators.js"
+import { styleMap } from "lit/directives/style-map.js"
 import { GridShowEngine, GridShowOptions, GridShowWidget } from "./gridShow"
 
 @customElement('grid-show')
@@ -7,8 +8,8 @@ export class GridShow extends LitElement {
     static styles = css`
         :host {
             display: block;
-            height: 100%;
             border: 1px solid yellow;
+            position: relative;
         }
         * {
             box-sizing: border-box;
@@ -301,19 +302,44 @@ export class GridShow extends LitElement {
         cols: 40,
         rows: 30
     }
+    @query("#digilean-grid")
+    gridEl: HTMLElement | undefined
+    engine: GridShowEngine | undefined
 
-    widgets: GridShowWidget[] = [{
-        x: 0, y: 0, w: 2, h: 2
-    }]
+    widgets: GridShowWidget[] = []
 
     renderWidget(w: GridShowWidget) {
+        if (!this.engine)
+            return html``
+
+        const cellWidth = this.engine.getGridCellWidth()
+        const height = `${cellWidth * w.h}px`
+        const top = `${cellWidth * w.y}px`
+
+        const styles = { height, top }
         return html`
-            <div class="grid-item" gs-x="${w.x}" gs-y="${w.y}" gs-w="${w.w}" gs-h="${w.h}">
+            <div class="grid-item" g-x="${w.x}" g-y="${w.y}" g-w="${w.w}" g-h="${w.h}" style=${styleMap(styles)}>
                 <span>Test</span>
             </div>
         `
     }
+    protected firstUpdated() {
 
+        for (let i = 0; i < 19; i++) {
+            const w: GridShowWidget = { x: i*2, y: 0, w: 2, h: 2}
+            this.widgets.push(w)
+        }
+        for (let y = 0; y < 10; y++) {
+            const w: GridShowWidget = { x: y*2, y: 2, w: 2, h: 2}
+            this.widgets.push(w)
+        }
+
+        if (this.gridEl) {
+            this.engine = new GridShowEngine(this.gridEl, this.options)
+            this.requestUpdate()
+        }
+            
+    }
     render() {
 
         return html`
