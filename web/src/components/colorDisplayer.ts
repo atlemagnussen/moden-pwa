@@ -1,8 +1,10 @@
+// import { SignalWatcher } from "@lit-labs/preact-signals"
 import { LitElement, css, html } from "lit"
 import { customElement, property, state } from "lit/decorators.js"
+import { classMap } from "lit/directives/class-map.js"
+import { styleMap } from "lit/directives/style-map.js"
 import { hexFromArgb } from "@material/material-color-utilities"
-import { DrawConfig, config } from "@app/services/drawConfig"
-import { Subscription } from "rxjs"
+import { configSignal } from "@app/services/drawConfig"
 
 @customElement('color-displayer')
 export class ColorDisplayer extends LitElement {
@@ -28,22 +30,18 @@ export class ColorDisplayer extends LitElement {
         }
     `
 
-    subs: Subscription[] = []
-
     @property({attribute: true, type: Number})
     color = 4294051627
-    
-    @state()
-    config?: DrawConfig
 
+    @state()
+    selectedColor? = ""
+    
     connectedCallback(): void {
         super.connectedCallback()
-        this.subs.push(config.subscribe(c => {
-            this.config = c
-            this.requestUpdate()
-        }))
+        configSignal.subscribe(dc => {
+            this.selectedColor = dc.selectedThemeColor
+        })
     }
-
     onClicked() {
         const hex = hexFromArgb(this.color)
         this.dispatchEvent(new CustomEvent("color-displayer-clicked", {
@@ -52,9 +50,15 @@ export class ColorDisplayer extends LitElement {
     }
     render() {
         const hex = hexFromArgb(this.color)
-        const selected = this.config?.selectedThemeColor == hex
+        
+        const classes = {
+            "selected": this.selectedColor === hex
+        }
+        const styles = {
+            "background-color": hex
+        }
         return html`
-            <div style="background-color: ${hex}" class="${selected ? 'selected' : ''}"
+            <div style=${styleMap(styles)} class=${classMap(classes)}
             @click=${this.onClicked}>
             </div>
         `

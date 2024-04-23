@@ -1,11 +1,11 @@
+import {SignalWatcher} from "@lit-labs/preact-signals"
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
-import { theme } from "@app/services/drawConfig"
+import { themeSignal } from "@app/services/drawConfig"
 import { Theme } from "@material/material-color-utilities"
-import { Subscription } from "rxjs"
 
 @customElement('about-view')
-export class AboutView extends LitElement {
+export class AboutView extends SignalWatcher(LitElement) {
     static styles = css`
         :host {
             display: flex;
@@ -19,18 +19,14 @@ export class AboutView extends LitElement {
         }
     `
     
-    subs: Subscription[] = []
     @state()
     theme: Theme | null = null
 
     connectedCallback(): void {
         super.connectedCallback()
-        this.subs.push(theme.subscribe(t => this.theme = t))
+        themeSignal.subscribe(t => this.theme = t)
     }
-    disconnectedCallback(): void {
-        super.disconnectedCallback()
-        this.subs.map(s => s.unsubscribe())
-    }
+    
     render() {
         if (!this.theme)
             return html`<span>no theme</span>`

@@ -1,7 +1,7 @@
+import {SignalWatcher} from "@lit-labs/preact-signals"
 import {LitElement, html, css} from "lit"
 import {customElement, query} from "lit/decorators.js"
-import { getConfig, getTouchColor, clear } from "@app/services/drawConfig"
-import { Subscription } from "rxjs"
+import { configSignal, getTouchColor, clearSignal } from "@app/services/drawConfig"
 
 interface PartialTouch {
     identifier: number
@@ -10,7 +10,7 @@ interface PartialTouch {
 }
 
 @customElement('canvas-drawer')
-export class CanvasDrawer extends LitElement {
+export class CanvasDrawer extends SignalWatcher(LitElement) {
     static styles = css`
         :host {
             display: flex;
@@ -26,8 +26,6 @@ export class CanvasDrawer extends LitElement {
             background: black;
         }
     `
-
-    subs: Subscription[] = []
 
     @query("section")
     sectionEl: HTMLDivElement | undefined
@@ -49,14 +47,11 @@ export class CanvasDrawer extends LitElement {
     }
     connectedCallback(): void {
         super.connectedCallback()
-        this.subs.push(clear.subscribe(() => {
+        clearSignal.subscribe(() => {
             this.clearCanvas()
-        }))
+        })
     }
-    disconnectedCallback(): void {
-        super.disconnectedCallback()
-        this.subs.map(s => s.unsubscribe())
-    }
+    
     protected firstUpdated(): void {
         if (!this.canvasEl)
             return
@@ -68,7 +63,7 @@ export class CanvasDrawer extends LitElement {
     setBackground() {
         if (!this.context || !this.sectionEl)
             return
-        const config = getConfig()
+        const config = configSignal.peek()
         if (!config.darkTheme)
             this.context.fillStyle = "#FFFFFF"
         this.context.fillRect(0, 0, this.sectionEl.clientWidth, this.sectionEl.clientHeight);
@@ -121,7 +116,7 @@ export class CanvasDrawer extends LitElement {
         e.preventDefault()
         if (!this.context)
             return
-        const config = getConfig()
+        const config = configSignal.peek()
         const context = this.context
         const touches = e.changedTouches;
         for (let i = 0; i < touches.length; i++) {
@@ -147,7 +142,7 @@ export class CanvasDrawer extends LitElement {
         e.preventDefault()
         if (!this.context)
             return
-        const config = getConfig()
+        const config = configSignal.peek()
         const context = this.context
         const touches = e.changedTouches;
         for (let i = 0; i < touches.length; i++) {
@@ -174,7 +169,7 @@ export class CanvasDrawer extends LitElement {
         if (e.buttons !== 1 || !this.context)
             return
     
-        const config = getConfig()
+        const config = configSignal.peek()
         this.context.beginPath()
         this.context.lineWidth = config.lineWidth
         this.context.lineCap = "round"

@@ -1,10 +1,10 @@
+import { SignalWatcher } from "@lit-labs/preact-signals"
 import { LitElement, css, html } from "lit"
-import { customElement, state } from "lit/decorators.js"
-import { DrawConfig, config, theme, setBaseColor, setLineWidth, setDarkTheme, setSelectedThemeColor, clearCanvas } from "@app/services/drawConfig"
-import { Theme } from "@material/material-color-utilities"
+import { customElement } from "lit/decorators.js"
+import { configSignal, themeSignal, setBaseColor, setLineWidth, setDarkTheme, setSelectedThemeColor, clearCanvas } from "@app/services/drawConfig"
 
 @customElement('drawing-menu')
-export class DrawingMenu extends LitElement {
+export class DrawingMenu extends SignalWatcher(LitElement) {
     static styles = css`
         :host {
             display: flex;
@@ -12,22 +12,9 @@ export class DrawingMenu extends LitElement {
             gap: 0.5rem;
         }
     `
-    @state()
-    config: DrawConfig = { baseColor: "#333333", lineWidth: 9, darkTheme: true}
-
-    @state()
-    theme: Theme | null = null
 
     connectedCallback(): void {
         super.connectedCallback()
-        config.subscribe(c => {
-            this.config = c
-            this.requestUpdate()
-        })
-        theme.subscribe(t => {
-            this.theme = t
-            this.requestUpdate()
-        })
     }
     colorChange(e: Event) {
         const target = e.target as HTMLInputElement
@@ -68,10 +55,10 @@ export class DrawingMenu extends LitElement {
     //     reader.readAsDataURL(file)
     // }
     renderThemeColors() {
-        if (!this.theme)
+        if (!themeSignal)
             return html``
 
-        const themeCol = this.config.darkTheme ? this.theme.schemes.dark : this.theme.schemes.light
+        const themeCol = configSignal.value.darkTheme ? themeSignal.value.schemes.dark : themeSignal.value.schemes.light
 
         return html`
         <section @color-displayer-clicked=${this.colorDisplayerClicked}>
@@ -87,10 +74,10 @@ export class DrawingMenu extends LitElement {
     render() {
         return html`
             <label for="background">Dark
-                <input type="checkbox" id="background" .checked=${this.config.darkTheme} @change=${this.darkThemeChanged}>
+                <input type="checkbox" id="background" .checked=${configSignal.value.darkTheme} @change=${this.darkThemeChanged}>
             </label>
-            <input type="color" placeholder="enter hex color" @input=${this.colorChange} value="${this.config.baseColor}">
-            <input type="range" min="1" max="50" value="${this.config.lineWidth}" @input=${this.lineWidthChange}>
+            <input type="color" placeholder="enter hex color" @input=${this.colorChange} value="${configSignal.value.baseColor}">
+            <input type="range" min="1" max="50" value="${configSignal.value.lineWidth}" @input=${this.lineWidthChange}>
             ${this.renderThemeColors()}
             <t-button @click=${this.clearCanvas}>clear</t-button>
         `
