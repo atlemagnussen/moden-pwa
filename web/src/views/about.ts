@@ -2,7 +2,7 @@ import {SignalWatcher} from "@lit-labs/preact-signals"
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { themeSignal } from "@app/services/drawConfig"
-import { Theme } from "@material/material-color-utilities"
+import { Theme, applyTheme } from "@material/material-color-utilities"
 
 @customElement('about-view')
 export class AboutView extends SignalWatcher(LitElement) {
@@ -22,9 +22,19 @@ export class AboutView extends SignalWatcher(LitElement) {
     @state()
     theme: Theme | null = null
 
+    @state()
+    json = ""
+
     connectedCallback(): void {
         super.connectedCallback()
-        themeSignal.subscribe(t => this.theme = t)
+        themeSignal.subscribe(t => {
+            this.theme = t
+            console.log(this.theme)
+            this.json = JSON.stringify(this.theme, null, 2)
+            const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            applyTheme(this.theme, {target: document.body, dark: systemDark});
+
+        })
     }
     
     render() {
@@ -52,6 +62,11 @@ export class AboutView extends SignalWatcher(LitElement) {
             <article>
                 <label>Dark</label>
                 <scheme-displayer .scheme=${this.theme.schemes.dark}></scheme-displayer>
+            </article>
+            <article>
+                <label>Json</label>
+                <textarea>${this.json}
+                </textarea>
             </article>
         `
     }
